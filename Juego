@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Impostor de Personajes — v14 (con reseñas)</title>
+<title>Impostor de Personajes — v15 (con Fútbol)</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Impostor">
@@ -165,7 +165,7 @@
     <header>
       <div>
         <h1>Impostor de Personajes</h1>
-        <div class="subtitle">v14: reseña corta del personaje, filtro por subcategoría, sin repetición, importación y 5 s.</div>
+        <div class="subtitle">v15: incluye subcategoría Fútbol, reseñas, filtro por subcategoría, sin repetición e importación.</div>
       </div>
       <div class="row">
         <button id="endRoundBtn" class="btn btn-success">✅ Finalizar ronda</button>
@@ -204,14 +204,15 @@
           <label><input type="checkbox" class="cat-sub" value="videojuegos" /> Videojuegos</label>
           <label><input type="checkbox" class="cat-sub" value="anime_manga" /> Anime/Manga</label>
           <label><input type="checkbox" class="cat-sub" value="musica" /> Música</label>
-          <label><input type="checkbox" class="cat-sub" value="deporte" /> Deporte</label>
+          <label><input type="checkbox" class="cat-sub" value="deporte" /> Deporte (otros)</label>
+          <label><input type="checkbox" class="cat-sub" value="futbol" /> Fútbol</label>
           <label><input type="checkbox" class="cat-sub" value="ciencia_tecnologia" /> Ciencia/Tecnología</label>
           <label><input type="checkbox" class="cat-sub" value="arte" /> Arte/Literatura</label>
           <label><input type="checkbox" class="cat-sub" value="historia_politica" /> Historia/Política</label>
           <label><input type="checkbox" class="cat-sub" value="empresarial" /> Empresarial/Tech</label>
           <label><input type="checkbox" class="cat-sub" value="activismo" /> Activismo</label>
         </div>
-        <div class="hint" style="margin-top:8px;">Consejo: usa “Limpiar” y marca solo las subcategorías que quieres incluir.</div>
+        <div class="hint" style="margin-top:8px;">Consejo: para jugar solo con futbolistas, marca solo Fútbol (y deja las demás subcategorías desmarcadas).</div>
       </div>
 
       <div class="row" style="margin-top:10px;">
@@ -286,7 +287,7 @@
         Pega una lista (una línea por nombre). Formato recomendado:
         <div class="hint" style="margin:6px 0;">
           <code>Nombre [subcategoria] - descripción corta (opcional)</code><br>
-          Ej: <code>Taylor Swift [musica] - Cantante y compositora estadounidense.</code>
+          Ej: <code>Alexis Sánchez [futbol] - Delantero chileno, máximo goleador de La Roja.</code>
         </div>
         <div style="margin:10px 0;">
           <textarea id="importText" style="width:100%; height:180px; background:#0f1328; color:#fff; border-radius:10px; padding:10px; border:1px solid rgba(255,255,255,.12)"></textarea>
@@ -334,14 +335,29 @@
     item("Naruto","ficcion","internacional",["anime_manga"],"Ninja rubio que sueña con convertirse en Hokage."),
     item("Sailor Moon","ficcion","internacional",["anime_manga"],"Justiciera mágica que lucha en nombre de la Luna."),
 
-    // REALES INTERNACIONALES
+    // REALES INTERNACIONALES - MÚSICA
     item("Michael Jackson","reales","internacional",["musica"],"Cantante y bailarín conocido como el Rey del Pop."),
     item("Beyoncé","reales","internacional",["musica"],"Cantante estadounidense, ex Destiny's Child, ícono del pop y R&B."),
     item("Taylor Swift","reales","internacional",["musica"],"Cantautora estadounidense famosa por sus discos conceptuales."),
     item("Shakira","reales","internacional",["musica"],"Cantante colombiana de pop y reguetón, famosa por su baile de caderas."),
-    item("Lionel Messi","reales","internacional",["deporte"],"Futbolista argentino, múltiple Balón de Oro."),
-    item("Cristiano Ronaldo","reales","internacional",["deporte"],"Futbolista portugués, goleador histórico y estrella mundial."),
+
+    // REALES INTERNACIONALES - FÚTBOL
+    item("Lionel Messi","reales","internacional",["futbol"],"Futbolista argentino, campeón del mundo y múltiple Balón de Oro."),
+    item("Cristiano Ronaldo","reales","internacional",["futbol"],"Goleador portugués, estrella en varios clubes europeos."),
+    item("Pelé","reales","internacional",["futbol"],"Delantero brasileño, tricampeón del mundo con Brasil."),
+    item("Diego Maradona","reales","internacional",["futbol"],"Ídolo argentino, famoso por el gol del siglo y Napoli."),
+    item("Neymar","reales","internacional",["futbol"],"Extremo brasileño, figura de la selección y clubes europeos."),
+    item("Kylian Mbappé","reales","internacional",["futbol"],"Delantero francés, campeón del mundo con Francia."),
+    item("Zinedine Zidane","reales","internacional",["futbol"],"Mediocampista francés, campeón del mundo en 1998."),
+    item("Ronaldinho","reales","internacional",["futbol"],"Crack brasileño, conocido por su magia y regates."),
+    item("Ronaldo Nazário","reales","internacional",["futbol"],"Delantero brasileño, dos veces campeón del mundo."),
+
+    // REALES INTERNACIONALES - OTROS DEPORTES
     item("LeBron James","reales","internacional",["deporte"],"Jugador de baloncesto estadounidense, estrella de la NBA."),
+    item("Usain Bolt","reales","internacional",["deporte"],"Velocista jamaicano, múltiple campeón olímpico."),
+    item("Michael Phelps","reales","internacional",["deporte"],"Nadador estadounidense, el más laureado en Juegos Olímpicos."),
+
+    // REALES INTERNACIONALES - CIENCIA, ARTE, EMPRESA, TV, ACTIVISMO
     item("Albert Einstein","reales","internacional",["ciencia_tecnologia"],"Físico alemán creador de la teoría de la relatividad."),
     item("Frida Kahlo","reales","internacional",["arte"],"Pintora mexicana conocida por sus autorretratos y estilo surrealista."),
     item("Elon Musk","reales","internacional",["empresarial"],"Empresario detrás de Tesla y SpaceX."),
@@ -351,13 +367,24 @@
     item("Malala Yousafzai","reales","internacional",["activismo"],"Activista por la educación de las niñas y Nobel de la Paz."),
     item("Pedro Pascal","reales","internacional",["cine_tv"],"Actor chileno-estadounidense conocido por The Mandalorian y The Last of Us."),
 
-    // REALES CHILENOS
-    item("Alexis Sánchez","reales","chile",["deporte"],"Futbolista chileno, figura histórica de La Roja."),
-    item("Arturo Vidal","reales","chile",["deporte"],"Futbolista chileno, mediocampista de garra y técnica."),
-    item("Claudio Bravo","reales","chile",["deporte"],"Arquero chileno, capitán histórico de la selección."),
+    // REALES CHILENOS - FÚTBOL
+    item("Alexis Sánchez","reales","chile",["futbol"],"Delantero chileno, máximo goleador histórico de La Roja."),
+    item("Arturo Vidal","reales","chile",["futbol"],"Mediocampista chileno, multicampeón en Europa."),
+    item("Claudio Bravo","reales","chile",["futbol"],"Arquero chileno, bicampeón de América."),
+    item("Gary Medel","reales","chile",["futbol"],"Defensa/mediocampista chileno apodado 'El Pitbull'."),
+    item("Charles Aránguiz","reales","chile",["futbol"],"Mediocampista chileno clave en los títulos de Copa América."),
+    item("Eduardo Vargas","reales","chile",["futbol"],"Delantero chileno, goleador histórico en Copas América."),
+    item("Jean Beausejour","reales","chile",["futbol"],"Extremo/lateral chileno, anotó en dos Mundiales."),
+    item("Iván Zamorano","reales","chile",["futbol"],"Delantero chileno, ídolo del Real Madrid e Inter."),
+    item("Marcelo Salas","reales","chile",["futbol"],"Delantero chileno, figura de River Plate y Lazio."),
+    item("Esteban Paredes","reales","chile",["futbol"],"Delantero chileno, máximo goleador del fútbol chileno."),
+    item("Mauricio Pinilla","reales","chile",["futbol"],"Delantero chileno, recordado por el 'casi gol del palo' en 2014."),
+
+    // REALES CHILENOS - OTROS DEPORTES
     item("Marcelo Ríos","reales","chile",["deporte"],"Tenista chileno, ex número 1 del mundo."),
-    item("Iván Zamorano","reales","chile",["deporte"],"Delantero chileno, ídolo del Real Madrid e Inter."),
     item("Christiane Endler","reales","chile",["deporte"],"Arquera chilena considerada de las mejores del mundo."),
+
+    // REALES CHILENOS - CULTURA, ARTE, HISTORIA
     item("Pablo Neruda","reales","chile",["arte","literatura"],"Poeta chileno, Premio Nobel de Literatura."),
     item("Gabriela Mistral","reales","chile",["arte","literatura"],"Poeta chilena y primera latinoamericana en ganar el Nobel."),
     item("Isabel Allende","reales","chile",["arte","literatura"],"Escritora chilena, autora de 'La casa de los espíritus'."),
@@ -466,7 +493,7 @@
     const o = getChecked('cat-origin').length;
     const s = getChecked('cat-sub').length;
     if(catSummary) catSummary.textContent = `Tipo: ${t} · Origen: ${o} · Sub: ${s}`;
-    localStorage.setItem('impostor_cats_v14', JSON.stringify({t:getChecked('cat-type'), o:getChecked('cat-origin'), s:getChecked('cat-sub')}));
+    localStorage.setItem('impostor_cats_v15', JSON.stringify({t:getChecked('cat-type'), o:getChecked('cat-origin'), s:getChecked('cat-sub')}));
   }
 
   function addPlayerInput(name="Jugador"){
@@ -754,7 +781,7 @@
   updatePlayersCount();
   loadScores(); renderScores();
   try{
-    const saved = JSON.parse(localStorage.getItem('impostor_cats_v14') || "null");
+    const saved = JSON.parse(localStorage.getItem('impostor_cats_v15') || "null");
     if(saved && typeof saved === 'object'){
       if(saved.t) document.querySelectorAll('.cat-type').forEach(c=> c.checked = saved.t.includes(c.value));
       if(saved.o) document.querySelectorAll('.cat-origin').forEach(c=> c.checked = saved.o.includes(c.value));
