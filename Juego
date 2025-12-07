@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Impostor de Personajes — v14 (con reseñas)</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Impostor">
+<meta name="theme-color" content="#0b0e1d" />
+<style>
+  :root{ --bg:#0b0e1d; --card:#121630; --muted:#aab2d5; --text:#f5f7ff; --accent:#5be7ff; --accent2:#8df57a; --danger:#ff5656; --sus:#e54545; --cyan:#a9f1ff; }
+  *{box-sizing:border-box} html,body{height:100%}
+  body{
+    margin:0;
+    font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans';
+    background: radial-gradient(1200px 800px at 70% -10%, #1a1f3f 0%, var(--bg) 45%);
+    color:var(--text); line-height:1.45;
+    display:flex; align-items:stretch; justify-content:center;
+  }
+  .wrap{ width:100%; max-width:1200px; padding:16px; }
+  header{ display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin:8px 0 16px 0; }
+  h1{ font-size:clamp(22px, 3.5vw, 32px); margin:0; letter-spacing:.3px; }
+  .subtitle{ color:var(--muted); font-size: 14px }
+
+  .panel{
+    background: linear-gradient(180deg, #192044 0%, var(--card) 70%);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;
+    padding:14px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.35);
+    margin-bottom:12px;
+  }
+  .row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center }
+  .grow{ flex:1 1 220px }
+  label{ font-size:12px; color:var(--muted); display:block; margin:4px 0 }
+  input[type="text"]{
+    width:100%;
+    padding:12px 14px;
+    background:#0f1328;
+    color:var(--text);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:12px;
+    outline:none;
+  }
+  input[type="text"]:focus{ border-color:var(--accent) }
+
+  .btn{
+    padding:12px 16px;
+    border-radius:14px;
+    border:1px solid rgba(255,255,255,.16);
+    background:#12162b;
+    color:var(--text);
+    cursor:pointer;
+    transition: transform .04s ease, background .2s ease, border-color .2s ease, box-shadow .2s;
+    user-select:none; touch-action:manipulation;
+  }
+  .btn:hover{ background:#171c34; box-shadow:0 4px 16px rgba(0,0,0,.25) }
+  .btn:active{ transform:scale(.98) }
+  .btn[disabled]{ opacity:.6; cursor:not-allowed; filter:grayscale(.2) }
+  .btn-primary{ background:linear-gradient(180deg, #b42c2c, #8d1e1e); border-color:#d64545; box-shadow: 0 0 0 1px rgba(214,69,69,.3) inset }
+  .btn-success{ background:linear-gradient(180deg, #1a802a, #0d5c1b); border-color:#2ea043 }
+  .btn-ghost{ background:#0f1328 }
+  .btn-danger{ background:linear-gradient(180deg, #a42828, #811a1a); border-color:#b43f3f }
+
+  .grid{ display:grid; grid-template-columns: repeat(3, 1fr); gap:12px; }
+  @media (max-width:1000px){ .grid{ grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width:650px){ .grid{ grid-template-columns: 1fr; } }
+
+  .card{
+    background: linear-gradient(180deg, #20254a 0%, #171b36 70%);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;
+    padding:16px;
+    min-height:140px;
+    display:flex; flex-direction:column; gap:10px;
+  }
+  .name{ font-weight:700; font-size:18px; }
+  .hint{ color:var(--muted); font-size:13px }
+
+  .footer{
+    display:flex; gap:10px; flex-wrap:wrap;
+    justify-content:space-between; align-items:center;
+    margin-top:12px; color:var(--muted); font-size:13px;
+  }
+
+  .spoiler{
+    background:#0f142a;
+    border:1px dashed rgba(255,255,255,.2);
+    border-radius:10px;
+    padding:10px 12px;
+    color:#9fb0ff;
+    cursor:pointer; user-select:none;
+  }
+  .spoiler.revealed{ color:#fff; border-style:solid }
+
+  .inputs-grid{
+    display:grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap:10px;
+  }
+  @media (max-width:1000px){ .inputs-grid{ grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width:650px){ .inputs-grid{ grid-template-columns: 1fr; } }
+
+  .tag{
+    font-size:12px; color:#cfe1ff;
+    background:#0f142a;
+    padding:6px 8px;
+    border-radius:10px;
+    border:1px solid rgba(255,255,255,.12);
+  }
+  .pill{
+    display:inline-flex; align-items:center; gap:8px;
+    padding:8px 10px;
+    border-radius:999px;
+    background:#0f142a;
+    border:1px solid rgba(255,255,255,.12);
+  }
+  .kbd{
+    background:#0f142a;
+    padding:2px 6px;
+    border-radius:6px;
+    border:1px solid rgba(255,255,255,.1)
+  }
+
+  .overlay{
+    position: fixed; inset: 0; z-index: 100;
+    display: none; align-items: center; justify-content: center;
+    background: rgba(0,0,0,.8); backdrop-filter: blur(2px);
+  }
+  .overlay.show{ display: flex; animation: fadeIn .25s ease-out; }
+  .overlay.hide{ animation: fadeOut .5s ease-in; }
+  .overlay-card{
+    width: min(90vw, 720px);
+    border-radius: 18px;
+    padding: 26px 22px;
+    background: linear-gradient(180deg, #22274d, #151936);
+    border:1px solid rgba(255,255,255,.14);
+    box-shadow: 0 18px 50px rgba(0,0,0,.45);
+    text-align: center;
+  }
+  .overlay-card.impostor{
+    background: linear-gradient(180deg, #3a1c1c, #1b0f0f);
+    border-color: rgba(255,86,86,.6);
+    box-shadow: 0 18px 60px rgba(255,86,86,.28);
+  }
+  .overlay-title{
+    font-weight:800;
+    font-size: clamp(22px, 3.6vw, 36px);
+    margin: 6px 0 10px 0;
+  }
+  .overlay-body{ font-size: clamp(18px, 2.6vw, 26px); }
+  .overlay-note{ color: var(--muted); font-size: 12px; margin-top: 10px; }
+  .overlay-desc{
+    margin-top:10px;
+    font-size:14px;
+    color:var(--muted);
+  }
+  @keyframes fadeIn{ from{ opacity: 0 } to{ opacity: 1 } }
+  @keyframes fadeOut{ from{ opacity: 1 } to{ opacity: 0 } }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Impostor de Personajes</h1>
+        <div class="subtitle">v14: reseña corta del personaje, filtro por subcategoría, sin repetición, importación y 5 s.</div>
+      </div>
+      <div class="row">
+        <button id="endRoundBtn" class="btn btn-success">✅ Finalizar ronda</button>
+        <button id="newRoundBtn" class="btn btn-primary">➕ Nueva ronda</button>
+      </div>
+    </header>
+
+    <!-- CATEGORÍAS -->
+    <div class="panel">
+      <div class="row" style="justify-content:space-between; gap:10px;">
+        <div class="tag">Categorías</div>
+        <div class="row">
+          <button id="selectAllCats" class="btn btn-ghost">Seleccionar todo</button>
+          <button id="clearCats" class="btn btn-ghost">Limpiar</button>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:8px;">
+        <div class="tag">Nivel 1 — Tipo</div>
+        <label><input type="checkbox" class="cat-type" value="ficcion" checked /> Ficción</label>
+        <label><input type="checkbox" class="cat-type" value="reales" checked /> Reales</label>
+      </div>
+
+      <div class="panel" style="margin-top:8px;">
+        <div class="tag">Nivel 2 — Origen</div>
+        <label><input type="checkbox" class="cat-origin" value="internacional" checked /> Internacionales</label>
+        <label><input type="checkbox" class="cat-origin" value="chile" checked /> Chilenos</label>
+      </div>
+
+      <div class="panel" style="margin-top:8px;">
+        <div class="tag">Nivel 3 — Subcategorías</div>
+        <div class="row" style="gap:16px; flex-wrap:wrap; margin-top:6px;">
+          <label><input type="checkbox" class="cat-sub" value="superheroes" /> Superhéroes/Cómics</label>
+          <label><input type="checkbox" class="cat-sub" value="cine_tv" /> Cine/TV</label>
+          <label><input type="checkbox" class="cat-sub" value="animacion" /> Animación/Infantil</label>
+          <label><input type="checkbox" class="cat-sub" value="videojuegos" /> Videojuegos</label>
+          <label><input type="checkbox" class="cat-sub" value="anime_manga" /> Anime/Manga</label>
+          <label><input type="checkbox" class="cat-sub" value="musica" /> Música</label>
+          <label><input type="checkbox" class="cat-sub" value="deporte" /> Deporte</label>
+          <label><input type="checkbox" class="cat-sub" value="ciencia_tecnologia" /> Ciencia/Tecnología</label>
+          <label><input type="checkbox" class="cat-sub" value="arte" /> Arte/Literatura</label>
+          <label><input type="checkbox" class="cat-sub" value="historia_politica" /> Historia/Política</label>
+          <label><input type="checkbox" class="cat-sub" value="empresarial" /> Empresarial/Tech</label>
+          <label><input type="checkbox" class="cat-sub" value="activismo" /> Activismo</label>
+        </div>
+        <div class="hint" style="margin-top:8px;">Consejo: usa “Limpiar” y marca solo las subcategorías que quieres incluir.</div>
+      </div>
+
+      <div class="row" style="margin-top:10px;">
+        <div class="pill" id="catSummary">Tipo: 2 · Origen: 2 · Sub: 0</div>
+        <div class="hint">Pool = intersección de Tipo ∧ Origen ∧ Subcategorías.</div>
+      </div>
+    </div>
+
+    <!-- JUGADORES -->
+    <div class="panel">
+      <div class="row" style="justify-content:space-between; gap:10px;">
+        <div class="tag">Jugadores</div>
+        <div class="row">
+          <button id="addPlayerBtn" class="btn btn-ghost">➕ Agregar jugador</button>
+          <button id="removePlayerBtn" class="btn btn-ghost">➖ Quitar último</button>
+          <button id="lockNamesBtn" class="btn">🔒 Bloquear</button>
+          <button id="unlockNamesBtn" class="btn">🔓 Editar</button>
+          <button id="importBtn" class="btn btn-ghost">📥 Importar personajes</button>
+          <button id="resetRepeatBtn" class="btn btn-ghost">🔄 Reset no-repetición</button>
+        </div>
+      </div>
+      <div id="inputs" class="inputs-grid" style="margin-top:10px;"></div>
+      <div class="footer">
+        <div>Consejo: cada jugador toca <span class="kbd">Ver mi rol</span> solo una vez por ronda.</div>
+        <div class="pill" id="playersCountTag"></div>
+      </div>
+    </div>
+
+    <!-- TARJETAS JUGADORES -->
+    <div id="players" class="grid" style="margin-top:14px;"></div>
+
+    <!-- PUNTAJES -->
+    <div class="panel">
+      <div class="row" style="justify-content:space-between; gap:10px;">
+        <div class="tag">Puntaje</div>
+        <div class="row">
+          <button id="applyPlusOne" class="btn btn-success">+1 a marcados (acertaron)</button>
+          <button id="applyImpostorBonus" class="btn">+2 al impostor</button>
+          <button id="resetScores" class="btn btn-danger">Reiniciar puntajes</button>
+        </div>
+      </div>
+      <div class="hint">Marca quiénes acertaron esta ronda y aplica <b>+1</b>. Si el impostor ganó o adivinó el personaje, aplica <b>+2</b>.</div>
+      <div style="overflow:auto; margin-top:8px;">
+        <table>
+          <thead><tr><th>✔</th><th>Jugador</th><th>Puntos</th><th>Acciones</th></tr></thead>
+          <tbody id="scoreBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="footer">
+      <div class="spoiler" id="spoilerReveal" title="Opcional: revelar solo el personaje">👀 Revelar personaje de la ronda (opcional)</div>
+      <div id="roundInfo"></div>
+    </div>
+  </div>
+
+  <!-- OVERLAY ROL -->
+  <div class="overlay" id="overlay">
+    <div class="overlay-card" id="overlayCard">
+      <div class="overlay-title" id="overlayTitle">Tu rol</div>
+      <div class="overlay-body" id="overlayBody">...</div>
+      <div class="overlay-desc" id="overlayDesc"></div>
+      <div class="overlay-note" id="overlayNote">Se cerrará automáticamente en 5 segundos.</div>
+    </div>
+  </div>
+
+  <!-- MODAL IMPORTAR -->
+  <div class="overlay" id="importOverlay">
+    <div class="overlay-card" style="max-width:720px; text-align:left;">
+      <div class="overlay-title">Importar personajes</div>
+      <div class="overlay-body">
+        Pega una lista (una línea por nombre). Formato recomendado:
+        <div class="hint" style="margin:6px 0;">
+          <code>Nombre [subcategoria] - descripción corta (opcional)</code><br>
+          Ej: <code>Taylor Swift [musica] - Cantante y compositora estadounidense.</code>
+        </div>
+        <div style="margin:10px 0;">
+          <textarea id="importText" style="width:100%; height:180px; background:#0f1328; color:#fff; border-radius:10px; padding:10px; border:1px solid rgba(255,255,255,.12)"></textarea>
+        </div>
+        <div>
+          <label><input type="radio" name="importType" value="ficcion" checked /> Ficción</label>
+          <label style="margin-left:12px;"><input type="radio" name="importType" value="reales" /> Reales</label>
+          <label style="margin-left:24px;"><input type="radio" name="importOrigin" value="internacional" checked /> Internacionales</label>
+          <label style="margin-left:12px;"><input type="radio" name="importOrigin" value="chile" /> Chilenos</label>
+        </div>
+        <div class="hint" style="margin-top:8px;">Si no etiquetas subcategoría, el personaje no se usa cuando hay subcategorías seleccionadas.</div>
+        <div style="margin-top:12px; display:flex; gap:8px; justify-content:flex-end;">
+          <button id="importCancel" class="btn">Cancelar</button>
+          <button id="importApply" class="btn btn-success">Agregar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+  // ==== Datos base con descripción (desc) ====
+  function item(name, tipo, origen, subs, desc){
+    return { name, tipo, origen, subs, desc: desc || "" };
+  }
+
+  const BASE = [
+    // FICCIÓN INTERNACIONAL
+    item("Spider-Man","ficcion","internacional",["superheroes","cine_tv"],"Superhéroe de Marvel, adolescente neoyorquino con poderes de araña."),
+    item("Batman","ficcion","internacional",["superheroes","cine_tv"],"Vigilante de Gotham, millonario sin poderes que combate el crimen."),
+    item("Superman","ficcion","internacional",["superheroes","cine_tv"],"Superhéroe kryptoniano criado en la Tierra, símbolo clásico de DC."),
+    item("Wonder Woman","ficcion","internacional",["superheroes","cine_tv"],"Guerrera amazona y princesa de Themyscira, heroína de DC."),
+    item("Iron Man","ficcion","internacional",["superheroes","cine_tv"],"Tony Stark, multimillonario genio que lucha con una armadura tecnológica."),
+    item("Harry Potter","ficcion","internacional",["cine_tv","literatura"],"Joven mago protagonista de la saga de Hogwarts."),
+    item("Hermione Granger","ficcion","internacional",["cine_tv","literatura"],"Bruja brillante y una de las mejores amigas de Harry Potter."),
+    item("Darth Vader","ficcion","internacional",["cine_tv"],"Villano icónico de Star Wars, antes conocido como Anakin Skywalker."),
+    item("Luke Skywalker","ficcion","internacional",["cine_tv"],"Jedi protagonista de la trilogía original de Star Wars."),
+    item("Yoda","ficcion","internacional",["cine_tv"],"Maestro Jedi de pequeña estatura pero gran sabiduría."),
+    item("Grogu (Baby Yoda)","ficcion","internacional",["cine_tv"],"Ser pequeño y poderoso en la Fuerza de la serie The Mandalorian."),
+    item("Mickey Mouse","ficcion","internacional",["animacion","cine_tv"],"Ratón icónico de Disney y símbolo de la compañía."),
+    item("Homer Simpson","ficcion","internacional",["animacion","cine_tv"],"Padre de la familia Simpson, conocido por su torpeza y carisma."),
+    item("Mario","ficcion","internacional",["videojuegos"],"Fontanero italiano protagonista de los juegos de Nintendo."),
+    item("Pikachu","ficcion","internacional",["videojuegos","animacion"],"Pokémon eléctrico amarillo, mascota de la franquicia Pokémon."),
+    item("Link (Zelda)","ficcion","internacional",["videojuegos"],"Héroe silencioso de la saga The Legend of Zelda."),
+    item("Goku","ficcion","internacional",["anime_manga"],"Saiyajin protagonista de Dragon Ball, amante de las peleas."),
+    item("Naruto","ficcion","internacional",["anime_manga"],"Ninja rubio que sueña con convertirse en Hokage."),
+    item("Sailor Moon","ficcion","internacional",["anime_manga"],"Justiciera mágica que lucha en nombre de la Luna."),
+
+    // REALES INTERNACIONALES
+    item("Michael Jackson","reales","internacional",["musica"],"Cantante y bailarín conocido como el Rey del Pop."),
+    item("Beyoncé","reales","internacional",["musica"],"Cantante estadounidense, ex Destiny's Child, ícono del pop y R&B."),
+    item("Taylor Swift","reales","internacional",["musica"],"Cantautora estadounidense famosa por sus discos conceptuales."),
+    item("Shakira","reales","internacional",["musica"],"Cantante colombiana de pop y reguetón, famosa por su baile de caderas."),
+    item("Lionel Messi","reales","internacional",["deporte"],"Futbolista argentino, múltiple Balón de Oro."),
+    item("Cristiano Ronaldo","reales","internacional",["deporte"],"Futbolista portugués, goleador histórico y estrella mundial."),
+    item("LeBron James","reales","internacional",["deporte"],"Jugador de baloncesto estadounidense, estrella de la NBA."),
+    item("Albert Einstein","reales","internacional",["ciencia_tecnologia"],"Físico alemán creador de la teoría de la relatividad."),
+    item("Frida Kahlo","reales","internacional",["arte"],"Pintora mexicana conocida por sus autorretratos y estilo surrealista."),
+    item("Elon Musk","reales","internacional",["empresarial"],"Empresario detrás de Tesla y SpaceX."),
+    item("Bill Gates","reales","internacional",["empresarial"],"Cofundador de Microsoft y filántropo."),
+    item("Oprah Winfrey","reales","internacional",["cine_tv"],"Presentadora y productora, una de las figuras más influyentes de la TV."),
+    item("Greta Thunberg","reales","internacional",["activismo"],"Joven activista sueca por el cambio climático."),
+    item("Malala Yousafzai","reales","internacional",["activismo"],"Activista por la educación de las niñas y Nobel de la Paz."),
+    item("Pedro Pascal","reales","internacional",["cine_tv"],"Actor chileno-estadounidense conocido por The Mandalorian y The Last of Us."),
+
+    // REALES CHILENOS
+    item("Alexis Sánchez","reales","chile",["deporte"],"Futbolista chileno, figura histórica de La Roja."),
+    item("Arturo Vidal","reales","chile",["deporte"],"Futbolista chileno, mediocampista de garra y técnica."),
+    item("Claudio Bravo","reales","chile",["deporte"],"Arquero chileno, capitán histórico de la selección."),
+    item("Marcelo Ríos","reales","chile",["deporte"],"Tenista chileno, ex número 1 del mundo."),
+    item("Iván Zamorano","reales","chile",["deporte"],"Delantero chileno, ídolo del Real Madrid e Inter."),
+    item("Christiane Endler","reales","chile",["deporte"],"Arquera chilena considerada de las mejores del mundo."),
+    item("Pablo Neruda","reales","chile",["arte","literatura"],"Poeta chileno, Premio Nobel de Literatura."),
+    item("Gabriela Mistral","reales","chile",["arte","literatura"],"Poeta chilena y primera latinoamericana en ganar el Nobel."),
+    item("Isabel Allende","reales","chile",["arte","literatura"],"Escritora chilena, autora de 'La casa de los espíritus'."),
+    item("Violeta Parra","reales","chile",["arte","musica"],"Cantautora y artista chilena, figura clave del folclor."),
+    item("Mon Laferte","reales","chile",["musica"],"Cantautora chilena radicada en México."),
+    item("Los Prisioneros (Jorge González)","reales","chile",["musica"],"Banda chilena de rock y pop crítico de los 80."),
+    item("Don Francisco (Mario Kreutzberger)","reales","chile",["cine_tv"],"Conductor chileno de Sábado Gigante."),
+    item("Bernardo O'Higgins","reales","chile",["historia_politica"],"Prócer de la independencia de Chile."),
+    item("Arturo Prat","reales","chile",["historia_politica"],"Héroe naval chileno caído en el combate de Iquique."),
+
+    // FICCIÓN CHILENA
+    item("Condorito","ficcion","chile",["animacion","cine_tv"],"Personaje de historieta chilena, un cóndor simpático y popular."),
+    item("Papelucho","ficcion","chile",["literatura"],"Niño protagonista de una famosa serie de libros infantiles chilenos.")
+  ];
+
+  // ==== Estado y utilidades ====
+  const el = (q)=>document.querySelector(q);
+  const playersGrid = el('#players');
+  const inputsGrid = el('#inputs');
+  const roundInfo = el('#roundInfo');
+  const spoiler = el('#spoilerReveal');
+  const playersCountTag = el('#playersCountTag');
+  const catSummary = el('#catSummary');
+  const scoreBody = el('#scoreBody');
+  const overlay = el('#overlay');
+  const overlayCard = el('#overlayCard');
+  const overlayTitle = el('#overlayTitle');
+  const overlayBody = el('#overlayBody');
+  const overlayDesc = el('#overlayDesc');
+
+  let state = {
+    players: [],
+    impostorIndex: null,
+    character: null,
+    characterDesc: "",
+    revealed: [],
+    buttonsDisabled: [],
+    roundFinished: false,
+    scores: {}
+  };
+
+  let usedSet = new Set(JSON.parse(localStorage.getItem('impostor_used')||'[]'));
+
+  function pickNewCharacter(pool){
+    const candidates = pool.filter(o => !usedSet.has(o.name));
+    const chosen = (candidates.length>0) ? candidates[Math.floor(Math.random()*candidates.length)]
+                                         : pool[Math.floor(Math.random()*pool.length)];
+    if(candidates.length===0){
+      usedSet = new Set();
+      localStorage.setItem('impostor_used', '[]');
+    }
+    usedSet.add(chosen.name);
+    localStorage.setItem('impostor_used', JSON.stringify(Array.from(usedSet)));
+    return chosen;
+  }
+
+  const getChecked = (cls)=> Array.from(document.querySelectorAll('.' + cls)).filter(c=>c.checked).map(c=>c.value);
+
+  function buildPool(){
+    const tipos = getChecked('cat-type');
+    const origenes = getChecked('cat-origin');
+    const subs = getChecked('cat-sub');
+    if(tipos.length===0 || origenes.length===0 || subs.length===0) return [];
+
+    // Base estricta por subcategoría
+    let pool = BASE.filter(o =>
+      tipos.includes(o.tipo) &&
+      origenes.includes(o.origen) &&
+      Array.isArray(o.subs) &&
+      o.subs.some(s => subs.includes(s))
+    );
+
+    // Importados por (tipo+origen) con subs opcionales
+    const combos = [];
+    tipos.forEach(t=> origenes.forEach(or=> combos.push([t,or])));
+    combos.forEach(([t,or])=>{
+      try{
+        const key = 'impostor_import_' + t + '_' + or;
+        const extra = JSON.parse(localStorage.getItem(key) || '[]');
+        extra.forEach(rec => {
+          if(typeof rec === 'string'){
+            // sin subcategoría => no entra si hay subs seleccionadas
+            return;
+          }else if(rec && rec.name){
+            const rsubs = Array.isArray(rec.subs) ? rec.subs : [];
+            if(rsubs.some(s => subs.includes(s))){
+              pool.push(item(rec.name, t, or, rsubs, rec.desc || ""));
+            }
+          }
+        });
+      }catch{}
+    });
+
+    // únicos
+    const uniq = [];
+    const seen = new Set();
+    pool.forEach(o=>{
+      const k = o.name + '|' + o.tipo + '|' + o.origen;
+      if(!seen.has(k)){ seen.add(k); uniq.push(o); }
+    });
+    return uniq;
+  }
+
+  function updateCatSummary(){
+    const t = getChecked('cat-type').length;
+    const o = getChecked('cat-origin').length;
+    const s = getChecked('cat-sub').length;
+    if(catSummary) catSummary.textContent = `Tipo: ${t} · Origen: ${o} · Sub: ${s}`;
+    localStorage.setItem('impostor_cats_v14', JSON.stringify({t:getChecked('cat-type'), o:getChecked('cat-origin'), s:getChecked('cat-sub')}));
+  }
+
+  function addPlayerInput(name="Jugador"){
+    const idx = inputsGrid.children.length;
+    const wrap = document.createElement('div'); wrap.className = 'grow';
+    const label = document.createElement('label'); label.textContent = `Jugador ${idx+1}`;
+    const input = document.createElement('input'); input.type = "text"; input.value = name + (name==="Jugador" ? " " + (idx+1) : "");
+    input.addEventListener('input', ()=>{ updatePlayersCount(); syncScoresWithPlayers(); renderScores(); });
+    wrap.appendChild(label); wrap.appendChild(input); inputsGrid.appendChild(wrap);
+    updatePlayersCount(); syncScoresWithPlayers(); renderScores();
+  }
+  function removeLastPlayerInput(){
+    if(inputsGrid.children.length>2){
+      inputsGrid.removeChild(inputsGrid.lastElementChild);
+      updatePlayersCount(); syncScoresWithPlayers(); renderScores();
+    }
+  }
+  function getPlayersFromInputs(){
+    return Array.from(inputsGrid.querySelectorAll('input[type="text"]')).map(i=> i.value.trim() || 'Jugador');
+  }
+  function lockNames(lock){
+    Array.from(inputsGrid.querySelectorAll('input')).forEach((i)=>{ i.disabled = lock; });
+  }
+  function updatePlayersCount(){
+    const n = inputsGrid.querySelectorAll('input').length;
+    playersCountTag.textContent = `Total de jugadores: ${n}`;
+  }
+
+  function renderPlayers(){
+    playersGrid.innerHTML = '';
+    const n = state.players.length;
+    playersGrid.style.gridTemplateColumns = (n<=3) ? 'repeat(3, 1fr)' : ((n===4)?'repeat(4, 1fr)':'');
+    state.players.forEach((name, i)=>{
+      const card = document.createElement('div'); card.className = 'card';
+      const who = document.createElement('div'); who.className = 'name'; who.textContent = name;
+      const hint = document.createElement('div'); hint.className = 'hint'; hint.textContent = 'Toca el botón solo cuando tengas el teléfono en tu mano.';
+      const btn = document.createElement('button'); btn.className = 'btn btn-primary'; btn.textContent = 'Ver mi rol'; btn.id = 'btn-'+i; btn.addEventListener('click', ()=> showRole(i));
+      const status = document.createElement('div'); status.className = 'hint'; status.id = `status-${i}`; status.textContent = 'Sin ver';
+      card.appendChild(who); card.appendChild(hint); card.appendChild(btn); card.appendChild(status); playersGrid.appendChild(card);
+    });
+  }
+
+  function showOverlay(title, body, desc, isImpostor=false, autoHideMs=5000){
+    overlayTitle.textContent = title;
+    overlayBody.innerHTML = body;
+    overlayDesc.textContent = desc || "";
+    document.getElementById('overlayNote').textContent = `Se cerrará automáticamente en ${Math.round(autoHideMs/1000)} segundos.`;
+    overlayCard.classList.toggle('impostor', !!isImpostor);
+    overlay.classList.remove('hide'); overlay.classList.add('show');
+    document.body.style.overflow='hidden';
+    setTimeout(()=>{
+      overlay.classList.add('hide');
+      setTimeout(()=>{
+        overlay.classList.remove('show','hide');
+        document.body.style.overflow='';
+      }, 500);
+    }, autoHideMs);
+  }
+
+  function newRound(){
+    const pool = buildPool();
+    if(pool.length === 0){
+      alert("Selecciona al menos un Tipo, un Origen y una Subcategoría.");
+      return;
+    }
+    state.players = getPlayersFromInputs();
+    const n = state.players.length;
+    if(n < 2){
+      alert("Agrega al menos 2 jugadores.");
+      return;
+    }
+    state.impostorIndex = Math.floor(Math.random()*n);
+    const chosen = pickNewCharacter(pool);
+    state.character = chosen.name;
+    state.characterDesc = chosen.desc || "";
+    state.revealed = new Array(n).fill(false);
+    state.buttonsDisabled = new Array(n).fill(false);
+    state.roundFinished = false;
+    renderPlayers();
+    roundInfo.textContent = "Ronda creada. Cada jugador puede ver su rol una sola vez.";
+    spoiler.classList.remove('revealed'); spoiler.textContent = "👀 Revelar personaje de la ronda (opcional)"; spoiler.dataset.revealed = "0";
+  }
+
+  function showRole(index){
+    if(state.roundFinished) return;
+    if(state.buttonsDisabled[index]) return;
+    const isImpostor = index === state.impostorIndex;
+    if(isImpostor){
+      showOverlay(
+        `Rol de ${state.players[index]}`,
+        `<b style="color:var(--sus)">Eres el IMPOSTOR</b> 🤫<br/>No sabes quién es el personaje de esta ronda.<br/><span class="hint">Objetivo: pasar desapercibido y adivinar el personaje.</span>`,
+        "",
+        true,
+        5000
+      );
+    }else{
+      const desc = state.characterDesc || "";
+      showOverlay(
+        `Rol de ${state.players[index]}`,
+        `Tu personaje es <b style="color:var(--cyan)">${state.character}</b> ✨`,
+        desc,
+        false,
+        5000
+      );
+    }
+    state.revealed[index] = true;
+    state.buttonsDisabled[index] = true;
+    const s = document.getElementById(`status-${index}`); if(s) s.textContent = 'Visto ✔';
+    const b = document.getElementById(`btn-${index}`); if(b){ b.disabled = true; b.textContent = 'Rol visto'; }
+  }
+
+  // Spoiler del personaje
+  spoiler.addEventListener('click', ()=>{
+    if(spoiler.dataset.revealed === "1"){
+      spoiler.classList.remove('revealed');
+      spoiler.textContent = "👀 Revelar personaje de la ronda (opcional)";
+      spoiler.dataset.revealed = "0";
+    }else{
+      spoiler.classList.add('revealed');
+      spoiler.textContent = `🎭 Personaje de la ronda: ${state.character}`;
+      spoiler.dataset.revealed = "1";
+    }
+  });
+
+  // Finalizar ronda
+  document.getElementById('endRoundBtn').addEventListener('click', ()=>{
+    let html = `<div style="font-size:18px; text-align:left; max-height:60vh; overflow:auto;">
+      <div style="margin-bottom:10px;"><b>Personaje de la ronda:</b> ${state.character}</div>
+      <div style="margin-bottom:10px;"><b>Impostor:</b> ${state.players[state.impostorIndex]}</div>
+      <hr style="border-color:rgba(255,255,255,.15)">
+      <div style="margin-top:10px;">`;
+    state.players.forEach((p, i)=>{
+      const role = (i === state.impostorIndex) ? 'Impostor' : `No impostor — Personaje: ${state.character}`;
+      html += `<div style="margin:6px 0;">• <b>${p}</b>: ${role}</div>`;
+    });
+    html += `</div></div>`;
+    showOverlay('Fin de la ronda', html, "", false, 5000);
+    state.roundFinished = true;
+    state.buttonsDisabled = state.buttonsDisabled.map(_=>true);
+    state.players.forEach((_, i)=>{ const b = document.getElementById(`btn-${i}`); if(b){ b.disabled = true; } });
+    roundInfo.textContent = "Ronda finalizada. Usa “Nueva ronda” para continuar.";
+  });
+
+  // ==== Puntajes ====
+  function loadScores(){
+    try{
+      const saved = JSON.parse(localStorage.getItem('impostor_scores') || "{}");
+      if(saved && typeof saved === 'object') state.scores = saved;
+    }catch{ state.scores = {}; }
+  }
+  function saveScores(){ localStorage.setItem('impostor_scores', JSON.stringify(state.scores)); }
+  function syncScoresWithPlayers(){
+    state.players = getPlayersFromInputs();
+    state.players.forEach(p=>{ if(state.scores[p] == null) state.scores[p] = 0; });
+    Object.keys(state.scores).forEach(p=>{ if(!state.players.includes(p)) delete state.scores[p]; });
+    saveScores();
+  }
+  function renderScores(){
+    scoreBody.innerHTML = '';
+    state.players.forEach((p, idx)=>{
+      const tr = document.createElement('tr');
+      const tdCheck = document.createElement('td'); const cb = document.createElement('input'); cb.type='checkbox'; cb.dataset.player = p; tdCheck.appendChild(cb);
+      const tdName = document.createElement('td'); tdName.textContent = p;
+      const tdScore = document.createElement('td'); tdScore.textContent = state.scores[p] ?? 0; tdScore.id = 'score-' + idx;
+      const tdActions = document.createElement('td');
+      const b1 = document.createElement('button'); b1.className='btn btn-ghost'; b1.textContent='+1'; b1.onclick=()=> addPoints(p,1);
+      const b2 = document.createElement('button'); b2.className='btn btn-ghost'; b2.textContent='+2'; b2.onclick=()=> addPoints(p,2);
+      const bm1 = document.createElement('button'); bm1.className='btn btn-ghost'; bm1.textContent='-1'; bm1.onclick=()=> addPoints(p,-1);
+      tdActions.appendChild(b1); tdActions.appendChild(b2); tdActions.appendChild(bm1);
+      tr.appendChild(tdCheck); tr.appendChild(tdName); tr.appendChild(tdScore); tr.appendChild(tdActions);
+      scoreBody.appendChild(tr);
+    });
+  }
+  function addPoints(player, n){
+    state.scores[player] = (state.scores[player] ?? 0) + n;
+    saveScores(); renderScores();
+  }
+  document.getElementById('applyPlusOne').addEventListener('click', ()=>{
+    Array.from(document.querySelectorAll('#scoreBody input[type="checkbox"]')).forEach(cb=>{
+      if(cb.checked){ addPoints(cb.dataset.player, 1); cb.checked = false; }
+    });
+  });
+  document.getElementById('applyImpostorBonus').addEventListener('click', ()=>{
+    if(state.impostorIndex == null){
+      alert('Aún no hay impostor en esta ronda.');
+      return;
+    }
+    const name = state.players[state.impostorIndex];
+    addPoints(name, 2);
+  });
+  document.getElementById('resetScores').addEventListener('click', ()=>{
+    if(confirm('¿Seguro que quieres reiniciar todos los puntajes?')){
+      Object.keys(state.scores).forEach(p=> state.scores[p]=0);
+      saveScores(); renderScores();
+    }
+  });
+
+  // ==== Importar personajes ====
+  const importOverlay = document.getElementById('importOverlay');
+  const importBtn = document.getElementById('importBtn');
+  const importCancel = document.getElementById('importCancel');
+  const importApply = document.getElementById('importApply');
+  const importText = document.getElementById('importText');
+
+  function openImport(){
+    importOverlay.classList.add('show');
+    document.body.style.overflow='hidden';
+  }
+  function closeImport(){
+    importOverlay.classList.remove('show');
+    document.body.style.overflow='';
+  }
+
+  importBtn.addEventListener('click', openImport);
+  importCancel.addEventListener('click', closeImport);
+
+  function addToStore(tipo, origen, records){
+    const key = 'impostor_import_' + tipo + '_' + origen;
+    const existing = JSON.parse(localStorage.getItem(key) || '[]');
+    const merged = Array.from(new Set(existing.concat(records)));
+    localStorage.setItem(key, JSON.stringify(merged));
+  }
+
+  importApply.addEventListener('click', ()=>{
+    const raw = (importText.value || '').split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+    if(raw.length===0){ alert('No hay nombres para importar.'); return; }
+    const tipo = (document.querySelector('input[name="importType"]:checked')||{}).value || 'ficcion';
+    const origen = (document.querySelector('input[name="importOrigin"]:checked')||{}).value || 'internacional';
+
+    const records = raw.map(line=>{
+      // Formatos admitidos:
+      // 1) Nombre [sub1,sub2] - descripción
+      // 2) Nombre [sub1,sub2]
+      const mFull = line.match(/^(.*?)\s*\[(.*?)\]\s*-\s*(.+)$/); // con descripción
+      const mNoDesc = line.match(/^(.*?)\s*\[(.*?)\]\s*$/);       // sin descripción
+      if(mFull){
+        const name = mFull[1].trim();
+        const tags = mFull[2].split(',').map(s=>s.trim()).filter(Boolean);
+        const desc = mFull[3].trim();
+        return { name, subs: tags, desc };
+      }else if(mNoDesc){
+        const name = mNoDesc[1].trim();
+        const tags = mNoDesc[2].split(',').map(s=>s.trim()).filter(Boolean);
+        return { name, subs: tags };
+      }
+      // Si no tiene corchetes, lo guardamos como string (sin subcategoría ni descripción)
+      return line;
+    });
+
+    addToStore(tipo, origen, records);
+    alert(`Se agregaron ${raw.length} nombres a ${tipo} / ${origen}.`);
+    importText.value=''; closeImport();
+  });
+
+  document.getElementById('resetRepeatBtn').addEventListener('click', ()=>{
+    if(confirm('¿Reiniciar el historial de personajes usados?')){
+      localStorage.removeItem('impostor_used'); usedSet = new Set();
+      alert('Historial reiniciado. Los personajes pueden volver a salir.');
+    }
+  });
+
+  // ==== Categorías: seleccionar / limpiar ====
+  document.getElementById('selectAllCats').addEventListener('click', ()=>{
+    document.querySelectorAll('.cat-type,.cat-origin,.cat-sub').forEach(c=> c.checked = true);
+    updateCatSummary();
+  });
+  document.getElementById('clearCats').addEventListener('click', ()=>{
+    document.querySelectorAll('.cat-type,.cat-origin,.cat-sub').forEach(c=> c.checked = false);
+    updateCatSummary();
+  });
+
+  document.querySelectorAll('.cat-type,.cat-origin,.cat-sub').forEach(c=> c.addEventListener('change', updateCatSummary));
+  document.getElementById('addPlayerBtn').addEventListener('click', ()=>{
+    const m=20;
+    if(inputsGrid.children.length >= m){ alert("Máximo 20 jugadores."); return; }
+    addPlayerInput();
+  });
+  document.getElementById('removePlayerBtn').addEventListener('click', removeLastPlayerInput);
+  document.getElementById('lockNamesBtn').addEventListener('click', ()=> lockNames(true));
+  document.getElementById('unlockNamesBtn').addEventListener('click', ()=> lockNames(false));
+  document.getElementById('newRoundBtn').addEventListener('click', newRound);
+
+  // ==== Init ====
+  ['Rachel','Rodrigo','Dan'].forEach(n=> addPlayerInput(n));
+  updatePlayersCount();
+  loadScores(); renderScores();
+  try{
+    const saved = JSON.parse(localStorage.getItem('impostor_cats_v14') || "null");
+    if(saved && typeof saved === 'object'){
+      if(saved.t) document.querySelectorAll('.cat-type').forEach(c=> c.checked = saved.t.includes(c.value));
+      if(saved.o) document.querySelectorAll('.cat-origin').forEach(c=> c.checked = saved.o.includes(c.value));
+      if(saved.s) document.querySelectorAll('.cat-sub').forEach(c=> c.checked = saved.s.includes(c.value));
+    }
+  }catch{}
+  updateCatSummary();
+</script>
+</body>
+</html>
